@@ -1,0 +1,84 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ---- shadcn/ui design tokens (Tailwind v4), mapped to the Resplendent palette ----
+   Dark mode only. These semantic tokens are what shadcn components read. */
+:root {
+  --radius: 0.75rem;
+  --background: #101426;
+  --foreground: #ffffff;
+  --card: #151a30;
+  --card-foreground: #ffffff;
+  --popover: #192038;
+  --popover-foreground: #ffffff;
+  --primary: #3366ff;
+  --primary-foreground: #ffffff;
+  --secondary: #192038;
+  --secondary-foreground: #ffffff;
+  --muted: #192038;
+  --muted-foreground: #8f9bb3;
+  --accent: #fac951;
+  --accent-foreground: #101426;
+  --destructive: #ff3d71;
+  --destructive-foreground: #ffffff;
+  --success: #00d68f;
+  --success-foreground: #052018;
+  --border: #232a45;
+  --input: #232a45;
+  --ring: #3366ff;
+}
+
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Heartbeat for the match overlay. */
+@keyframes beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
