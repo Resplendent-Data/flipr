@@ -6,13 +6,16 @@ import { Portrait } from './Portrait.tsx'
 
 interface ProfileCardProps {
   profile: NarwhalProfile
+  /** The Affinity reason blurb — the short "why this fits" line. */
+  affinityReason?: string
 }
 
 /**
  * A narwhal card: a tall gradient Portrait with the name/age/location overlaid
- * at the bottom (dating-app style), then bio and trait/interest badges below.
+ * at the bottom (dating-app style), then the Affinity reason, bio, and
+ * trait/interest badges below.
  */
-export function ProfileCard({ profile }: ProfileCardProps) {
+export function ProfileCard({ profile, affinityReason }: ProfileCardProps) {
   return (
     <Card className="gap-0 overflow-hidden p-0 shadow-[0_26px_60px_-22px_rgba(0,0,0,0.75)]">
       <div className="relative">
@@ -32,6 +35,13 @@ export function ProfileCard({ profile }: ProfileCardProps) {
       </div>
 
       <div className="p-5">
+        {affinityReason && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-accent/25 bg-accent/10 px-3 py-2.5 text-[13px] font-medium leading-snug text-accent">
+            <Sparkles size={14} className="mt-0.5 shrink-0" />
+            <span>{affinityReason}</span>
+          </div>
+        )}
+
         <p className="text-[15px] leading-relaxed text-[#e6eaf5]">{profile.bio}</p>
 
         <div className="mb-2 mt-5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">

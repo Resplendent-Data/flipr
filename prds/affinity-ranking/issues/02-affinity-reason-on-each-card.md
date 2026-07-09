@@ -1,7 +1,7 @@
 ---
 title: "Affinity reason on each card"
 type: AFK
-status: ready
+status: done
 blocked_by: ["01-rank-deck-by-affinity.md"]
 depends_on_story_ids: [2, 3, 4, 8]
 slice_order: 2

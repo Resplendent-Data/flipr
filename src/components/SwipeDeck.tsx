@@ -6,6 +6,8 @@ import { ProfileCard } from './ProfileCard.tsx'
 interface SwipeDeckProps {
   current: NarwhalProfile
   next: NarwhalProfile | null
+  currentReason: string
+  nextReason: string | null
   onSwipe: (direction: SwipeDirection) => void
   disabled: boolean
 }
@@ -15,7 +17,14 @@ interface SwipeDeckProps {
  * as a pile; the top card is drag-to-swipe (via the reused useSwipe hook) with
  * LIKE/PASS stamps. Round action buttons below trigger the same fling.
  */
-export function SwipeDeck({ current, next, onSwipe, disabled }: SwipeDeckProps) {
+export function SwipeDeck({
+  current,
+  next,
+  currentReason,
+  nextReason,
+  onSwipe,
+  disabled,
+}: SwipeDeckProps) {
   const swipe = useSwipe(current.id, onSwipe, !disabled)
   const locked = disabled || swipe.flinging
 
@@ -27,7 +36,7 @@ export function SwipeDeck({ current, next, onSwipe, disabled }: SwipeDeckProps) 
             className="pointer-events-none absolute inset-0 translate-y-5 scale-[0.94] brightness-[0.72]"
             aria-hidden="true"
           >
-            <ProfileCard profile={next} />
+            <ProfileCard profile={next} affinityReason={nextReason ?? undefined} />
           </article>
         )}
 
@@ -55,7 +64,7 @@ export function SwipeDeck({ current, next, onSwipe, disabled }: SwipeDeckProps) 
             >
               Pass
             </div>
-            <ProfileCard profile={current} />
+            <ProfileCard profile={current} affinityReason={currentReason} />
           </article>
         </div>
       </div>

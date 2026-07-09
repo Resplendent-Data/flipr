@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { CurrentUser, DeckEntry, Match, NarwhalProfile } from '../shared/types.ts'
 import type { Preferences } from './seedData.ts'
-import { scoreAffinity } from './affinity.ts'
+import { computeAffinity } from './affinity.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -174,7 +174,8 @@ export function getDeck(userId: number): DeckEntry[] {
   return rows
     .map((row) => {
       const profile = toProfile(row)
-      return { profile, affinity: scoreAffinity(prefs, profile) }
+      const { score, reason } = computeAffinity(prefs, profile)
+      return { profile, affinity: score, affinityReason: reason }
     })
     .sort((a, b) => b.affinity - a.affinity)
 }

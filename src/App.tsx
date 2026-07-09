@@ -39,6 +39,8 @@ export default function App() {
   // The deck arrives already sorted best-first by Affinity; render top-down.
   const current = deck[0]?.profile ?? null
   const next = deck[1]?.profile ?? null
+  const currentReason = deck[0]?.affinityReason ?? ''
+  const nextReason = deck[1]?.affinityReason ?? null
 
   async function handleSwipe(direction: SwipeDirection) {
     if (!current) return
@@ -84,6 +86,8 @@ export default function App() {
               <SwipeDeck
                 current={current}
                 next={next}
+                currentReason={currentReason}
+                nextReason={nextReason}
                 onSwipe={handleSwipe}
                 disabled={busy}
               />
