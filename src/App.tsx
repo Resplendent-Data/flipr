@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { api } from './api.ts'
-import type { CurrentUser, Match, NarwhalProfile, SwipeDirection } from './types.ts'
+import type { CurrentUser, DeckEntry, Match, NarwhalProfile, SwipeDirection } from './types.ts'
 import { Header } from './components/Header.tsx'
 import { SwipeDeck } from './components/SwipeDeck.tsx'
 import { MatchesPanel } from './components/MatchesPanel.tsx'
@@ -13,7 +13,7 @@ import { Toaster } from './components/ui/sonner.tsx'
 
 export default function App() {
   const [user, setUser] = useState<CurrentUser | null>(null)
-  const [deck, setDeck] = useState<NarwhalProfile[]>([])
+  const [deck, setDeck] = useState<DeckEntry[]>([])
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -36,8 +36,9 @@ export default function App() {
     load()
   }, [])
 
-  const current = deck[0] ?? null
-  const next = deck[1] ?? null
+  // The deck arrives already sorted best-first by Affinity; render top-down.
+  const current = deck[0]?.profile ?? null
+  const next = deck[1]?.profile ?? null
 
   async function handleSwipe(direction: SwipeDirection) {
     if (!current) return

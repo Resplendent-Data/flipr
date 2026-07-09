@@ -34,6 +34,18 @@ _Avoid_: heart, yes, favorite
 A narwhal the current user has Liked. By demo convention every Like becomes a Match — there is no reciprocation step.
 _Avoid_: connection, pair
 
+**Preferences**:
+The current user's stated tastes (preferred traits, interests, pod style, age range, etc.) used to rank the deck. A property of the Current user, not of any narwhal.
+_Avoid_: settings, filters, criteria
+
+**Affinity**:
+How well an unswiped narwhal fits the current user's Preferences, expressed as a score used to order the deck (best first). Distinct from a Match: Affinity is pre-Like suitability; a Match only exists after a Like.
+_Avoid_: match score, compatibility, rank, relevance
+
+**Affinity reason**:
+The short human-readable blurb on a narwhal's card explaining why its Affinity is high (e.g. what Preferences it hit). UI copy may be friendlier, but this is the canonical term.
+_Avoid_: why this match, match reason, explanation
+
 **Pod**:
 The current user's collection of Matches, shown alongside the deck.
 _Avoid_: crew, group, matches list

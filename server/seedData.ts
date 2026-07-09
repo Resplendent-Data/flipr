@@ -1,9 +1,28 @@
 // Demo seed data. Edit here to change what ships in the committed database.
 
+/**
+ * The current user's stated tastes, used to rank the deck by Affinity.
+ * Server-internal: never sent to the client.
+ */
+export interface Preferences {
+  preferredTraits: string[]
+  preferredPodStyle: string
+  ageMin: number
+  ageMax: number
+}
+
 /** Avatar colors are drawn from the Resplendent Data brand palette. */
 export const currentUser = {
   name: 'Nara',
   avatarColor: '#3366ff',
+  // Chosen so the seeded deck ranks with a clear top (Marina Deep), a spread of
+  // mid-tier matches, and a couple of zero-overlap narwhals at the bottom.
+  preferences: {
+    preferredTraits: ['Thoughtful', 'Calm', 'Loyal', 'Curious'],
+    preferredPodStyle: 'Duo — just us two',
+    ageMin: 5,
+    ageMax: 10,
+  } satisfies Preferences,
 }
 
 export interface SeedProfile {

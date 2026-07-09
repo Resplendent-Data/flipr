@@ -1,7 +1,7 @@
 import type {
   CurrentUser,
+  DeckEntry,
   Match,
-  NarwhalProfile,
   SwipeDirection,
   SwipeResponse,
 } from './types.ts'
@@ -24,7 +24,7 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
 
 export const api = {
   getCurrentUser: () => get<CurrentUser>('/api/current-user'),
-  getProfiles: () => get<NarwhalProfile[]>('/api/profiles'),
+  getProfiles: () => get<DeckEntry[]>('/api/profiles'),
   getMatches: () => get<Match[]>('/api/matches'),
   swipe: (profileId: number, direction: SwipeDirection) =>
     post<SwipeResponse>('/api/swipes', { profileId, direction }),

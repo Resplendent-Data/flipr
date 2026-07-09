@@ -25,6 +25,17 @@ export interface NarwhalProfile {
   avatarColor: string
 }
 
+/**
+ * A deck item: a narwhal wrapped with its Affinity (how well it fits the
+ * current user's Preferences). The deck is served best-first by `affinity`.
+ * Affinity is a deck-only concept — it never appears on a Match or a bare
+ * profile. (`affinityReason`, the "why", is added in a later slice.)
+ */
+export interface DeckEntry {
+  profile: NarwhalProfile
+  affinity: number
+}
+
 /** A profile the user liked that became a match. */
 export interface Match {
   id: number

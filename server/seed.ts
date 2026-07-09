@@ -20,9 +20,17 @@ export function seedDatabase(): void {
         WHERE name IN ('matches', 'swipes', 'narwhal_profiles', 'users');
     `)
 
-    db.prepare('INSERT INTO users (name, avatar_color) VALUES (?, ?)').run(
+    db.prepare(
+      `INSERT INTO users
+         (name, avatar_color, preferred_traits, preferred_pod_style, age_min, age_max)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    ).run(
       currentUser.name,
       currentUser.avatarColor,
+      JSON.stringify(currentUser.preferences.preferredTraits),
+      currentUser.preferences.preferredPodStyle,
+      currentUser.preferences.ageMin,
+      currentUser.preferences.ageMax,
     )
 
     const insertProfile = db.prepare(`

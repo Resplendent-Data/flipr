@@ -2,7 +2,9 @@ import Database from 'better-sqlite3'
 import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { CurrentUser, Match, NarwhalProfile } from '../shared/types.ts'
+import type { CurrentUser, DeckEntry, Match, NarwhalProfile } from '../shared/types.ts'
+import type { Preferences } from './seedData.ts'
+import { scoreAffinity } from './affinity.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -19,9 +21,14 @@ db.pragma('foreign_keys = ON')
 export function initSchema(): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      id           INTEGER PRIMARY KEY AUTOINCREMENT,
-      name         TEXT NOT NULL,
-      avatar_color TEXT NOT NULL
+      id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+      name                TEXT NOT NULL,
+      avatar_color        TEXT NOT NULL,
+      -- Server-internal Preferences used to rank the deck by Affinity.
+      preferred_traits    TEXT NOT NULL DEFAULT '[]',  -- JSON array of strings
+      preferred_pod_style TEXT NOT NULL DEFAULT '',
+      age_min             INTEGER NOT NULL DEFAULT 0,
+      age_max             INTEGER NOT NULL DEFAULT 999
     );
 
     CREATE TABLE IF NOT EXISTS narwhal_profiles (
@@ -55,6 +62,25 @@ export function initSchema(): void {
       UNIQUE (user_id, profile_id)
     );
   `)
+
+  migrateUserPreferences()
+}
+
+/**
+ * Add the Preference columns to an existing `users` table that predates them.
+ * `CREATE TABLE IF NOT EXISTS` never alters an existing table, and the committed
+ * demo database was created before Preferences existed — so we add any missing
+ * columns here. Idempotent and safe on every startup.
+ */
+function migrateUserPreferences(): void {
+  const columns = db.prepare(`PRAGMA table_info(users)`).all() as { name: string }[]
+  const has = (name: string) => columns.some((c) => c.name === name)
+  if (!has('preferred_traits'))
+    db.exec(`ALTER TABLE users ADD COLUMN preferred_traits TEXT NOT NULL DEFAULT '[]'`)
+  if (!has('preferred_pod_style'))
+    db.exec(`ALTER TABLE users ADD COLUMN preferred_pod_style TEXT NOT NULL DEFAULT ''`)
+  if (!has('age_min')) db.exec(`ALTER TABLE users ADD COLUMN age_min INTEGER NOT NULL DEFAULT 0`)
+  if (!has('age_max')) db.exec(`ALTER TABLE users ADD COLUMN age_max INTEGER NOT NULL DEFAULT 999`)
 }
 
 // --- Row shapes as stored in SQLite (snake_case, JSON columns as text) ---
@@ -106,8 +132,37 @@ export function getCurrentUser(): CurrentUser {
   return toUser(row)
 }
 
-/** Profiles the user has not yet swiped, in seed order. */
-export function getDeck(userId: number): NarwhalProfile[] {
+interface PreferencesRow {
+  preferred_traits: string
+  preferred_pod_style: string
+  age_min: number
+  age_max: number
+}
+
+/** The user's server-internal Preferences, used only to rank the deck. */
+export function getPreferences(userId: number): Preferences {
+  const row = db
+    .prepare(
+      `SELECT preferred_traits, preferred_pod_style, age_min, age_max
+       FROM users WHERE id = ?`,
+    )
+    .get(userId) as PreferencesRow
+  return {
+    preferredTraits: JSON.parse(row.preferred_traits),
+    preferredPodStyle: row.preferred_pod_style,
+    ageMin: row.age_min,
+    ageMax: row.age_max,
+  }
+}
+
+/**
+ * The deck: profiles the user has not yet swiped, wrapped with their Affinity
+ * and ordered best-first. Equal Affinity breaks by seed order (ascending id):
+ * the rows arrive id-ordered and `Array.sort` is stable, so ties keep that
+ * order.
+ */
+export function getDeck(userId: number): DeckEntry[] {
+  const prefs = getPreferences(userId)
   const rows = db
     .prepare(
       `SELECT p.* FROM narwhal_profiles p
@@ -115,7 +170,13 @@ export function getDeck(userId: number): NarwhalProfile[] {
        ORDER BY p.id`,
     )
     .all(userId) as ProfileRow[]
-  return rows.map(toProfile)
+
+  return rows
+    .map((row) => {
+      const profile = toProfile(row)
+      return { profile, affinity: scoreAffinity(prefs, profile) }
+    })
+    .sort((a, b) => b.affinity - a.affinity)
 }
 
 /** Matches for the user, newest first. */

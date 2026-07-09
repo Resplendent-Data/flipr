@@ -1,6 +1,7 @@
 // Re-export the shared API contract so components import from one place.
 export type {
   CurrentUser,
+  DeckEntry,
   Match,
   NarwhalProfile,
   SwipeDirection,
